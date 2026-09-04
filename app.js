@@ -29,6 +29,9 @@ const formElement = document.getElementById("albumForm");
 const albumElement = document.querySelector("#albumContainer");
 //console.log(albumElement);
 
+//!Agregamos la variable de albums para guardar la información:
+const albums = [];
+
 /**
  * !EVENTOS
  * Es cualquier acción que realiza el usuario en la página web
@@ -63,7 +66,12 @@ formElement.addEventListener("submit",(event)=>{
     console.log(album);
     //Para hacer todo esto en una sola línea:
     // const album = Object.fromEntries([...newFormData(formElement)]);
-    renderCard(album,albumElement);
+    albums.push(album);
+    //console.log(albums);
+    //Limpiamos antes de volver a renderizar todas las cards para evitar la acumulación.
+    albumElement.innerHTML = "";
+    //Renderizamos todas las cards dentro del array de albums
+    albums.map((album)=> renderCard(album, albumElement));
     formElement.reset();
 });
 
@@ -100,3 +108,12 @@ const renderCard = (albumObject) =>{
     albumElement.insertAdjacentHTML("beforeend", card);
 };
 */
+
+/**
+ * *EN EL DÍA DOS LOS ELEMENTOS A AÑADIR SON:
+ * 1. Crear un array para almacenar los albums
+ * 1.1 cada que creemos un album guardarlo en el array
+ * 2. renderizar todos los albums del array, no solo uno
+ * 3.  Usar localstorage para almacenar la info
+ * 4. obtener la informacion guardada y mostrarla por si el usuario actualiza
+ */
