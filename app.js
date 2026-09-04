@@ -23,11 +23,11 @@
  */
 
 const formElement = document.getElementById("albumForm");
-console.log(formElement);
+//console.log(formElement);
 
 //Aqui también vamos a buscar por ID pero querySelector permite encontrar por otros elementos aparte del id, como la clase o el name.
 const albumElement = document.querySelector("#albumContainer");
-console.log(albumElement);
+//console.log(albumElement);
 
 /**
  * !EVENTOS
@@ -59,58 +59,44 @@ formElement.addEventListener("submit",(event)=>{
     console.log(formData.get("title")); //Obtienes un solo elemento
     const dataArray = [...formData];
     console.log(dataArray);
-    const dataObject = Object.fromEntries(dataArray);
-    console.log(dataObject);
+    const album = Object.fromEntries(dataArray);
+    console.log(album);
     //Para hacer todo esto en una sola línea:
     // const album = Object.fromEntries([...newFormData(formElement)]);
+    renderCard(album,albumElement);
+    formElement.reset();
 });
 
-const card = `
-  <div class="card" style="width: 18rem;">
-    <div class="card-body">
-      <h5 class="card-title">Card title</h5>
-      <h6 class="card-subtitle mb-2 text-body-secondary">Card subtitle</h6>
-      <p class="card-text">Some quick example text to build on the card title and make up the bulk of the card’s content.</p>
-      <a href="#" class="card-link">Card link</a>
-      <a href="#" class="card-link">Another link</a>
-    </div>
-  </div>
-`;
+//Para que se pueda utilizar en distintos lugares ponemos como parámetro de la función al elemento html
+const renderCard = (albumObject,htmlElement) =>{
+    const card = `
+        <div class="card" style="width: 18rem;">
+            <div class="card-body">
+                <h5 class="card-title">${albumObject.title}</h5>
+                <h6 class="card-subtitle mb-2 text-body-secondary">${albumObject.artist}</h6>
+                <p class="card-text">Año: ${albumObject.year}</p>
+                <a href="#" class="card-link">Género: ${albumObject.genre}</a>
+                <a href="#" class="card-link">Rating: ${albumObject.rating}</a>
+            </div>
+        </div>
+    `;
+    htmlElement.insertAdjacentHTML("beforeend", card);
+};
 
+//Versión para sólo este script:
 /**
- * !MANIPULACIÓN DE LA INTERFAZ:
- * 1. Propiedad llamada innerhtml, dentro de ella podremos observar todo el html que vive dentro de la etiqueta seleccionada
- * 2.Propiedad llamada textContent. Esta sólo mostrará el texto que tiene dentro.
- */
-
-console.log(albumElement.innerHTML);
-console.log("text content");
-console.log(albumElement.textContent);
-
-//Si no usamos con cuidado el innerHTML se podrían borrar los datos que ya se tenían en el html, por eso es importante concatenar lo que se va a agregar +=
-//Si se pusiera el = nada más, estaríamos reasignando toda lo que esté dentro del elemento al texto nuevo que se ingresa.
-//! IMPORTANTE: No usar innerHTML para renderizar solo texto si estoy recibiendo y mostrando, porque es propenso a inyección de html. 
-// Para eso mejor usar textContent.
-albumElement.innerHTML += "<h1>Hola tonotos</h1>";
-albumElement.innerHTML += card;
-console.log(albumElement.innerHTML);
-
-//Aquí vemos lo que pasa si usamos textContent
-/**
-albumElement.textContent += "Hola";
-albumElement.textContent += card;
+const renderCard = (albumObject) =>{
+    const card = `
+        <div class="card" style="width: 18rem;">
+            <div class="card-body">
+                <h5 class="card-title">${albumObject.title}</h5>
+                <h6 class="card-subtitle mb-2 text-body-secondary">${albumObject.artist}</h6>
+                <p class="card-text">${albumObject.year}</p>
+                <a href="#" class="card-link">${albumObject.genre}</a>
+                <a href="#" class="card-link">${albumObject.rating}</a>
+            </div>
+        </div>
+    `;
+    albumElement.insertAdjacentHTML("beforeend", card);
+};
 */
-
-/**
- * ! Insert Adjacent HTML
- * https://developer.mozilla.org/es/docs/Web/API/Element/insertAdjacentHTML
- * Permite insertar html en el contenedor sin borrar lo que ya está y en una posición específica.
- * Tiene 4 posiciones
- * 1. beforebegin
- * 2. beforeend
- * 3. afterbegin
- * 4. afterend
- */
-albumElement.insertAdjacentHTML("afterend","<p>Insertado por insert adjacent html</p>");
-
-albumElement.insertAdjacentHTML("beforeend",card);
