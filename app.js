@@ -30,7 +30,8 @@ const albumElement = document.querySelector("#albumContainer");
 //console.log(albumElement);
 
 //!Agregamos la variable de albums para guardar la información:
-const albums = [];
+//Se definió con let para que no dé error en la parte del event listener de volver a cargar la página.
+let albums = [];
 
 /**
  * !EVENTOS
@@ -55,19 +56,32 @@ const albums = [];
  * https://developer.mozilla.org/es/docs/Web/JavaScript/Reference/Global_Objects/Object/fromEntries
  */
 
+window.addEventListener("load",(event)=>{
+    if (getItemLocalStorage("albums")== undefined) return;
+    albums = [...getItemLocalStorage("albums")];
+    console.log(albums);
+    /**
+     * Segunda opción:
+     * getItemLocalStorage("albums").forEach((album) => albums.push(album));
+     */
+    //* Con esto renderizamos las cards de la información que ya había en memoria local cuando vuelves a cargar la página para que no se quede en blanco y tengas que comenzar de cero
+    albums.map((album)=> renderCard(album, albumElement));
+})
+
 formElement.addEventListener("submit",(event)=>{
     event.preventDefault();
     const formData = new FormData(formElement);
-    console.log(formData);
-    console.log(formData.get("title")); //Obtienes un solo elemento
+    //console.log(formData);
+    //console.log(formData.get("title")); //Obtienes un solo elemento
     const dataArray = [...formData];
-    console.log(dataArray);
+    //console.log(dataArray);
     const album = Object.fromEntries(dataArray);
     console.log(album);
     //Para hacer todo esto en una sola línea:
     // const album = Object.fromEntries([...newFormData(formElement)]);
     albums.push(album);
     //console.log(albums);
+    setLocalStorage("albums",albums);
     //Limpiamos antes de volver a renderizar todas las cards para evitar la acumulación.
     albumElement.innerHTML = "";
     //Renderizamos todas las cards dentro del array de albums
@@ -115,5 +129,25 @@ const renderCard = (albumObject) =>{
  * 1.1 cada que creemos un album guardarlo en el array
  * 2. renderizar todos los albums del array, no solo uno
  * 3.  Usar localstorage para almacenar la info
+ * https://developer.mozilla.org/es/docs/Web/API/Window/localStorage
  * 4. obtener la informacion guardada y mostrarla por si el usuario actualiza
+ * https://developer.mozilla.org/en-US/docs/Web/API/Window/load_event
+ * 
  */
+
+const setLocalStorage = (key,value) => {
+    //Paso 1: Convertir el valor a texto
+    const textValue = JSON.stringify(value);
+    //Paso 2: Almacenar
+    localStorage.setItem(key,textValue);
+};
+
+const getItemLocalStorage = (key)=>{
+    //https://dev.to/arikaturika/one-concept-a-day-early-return-pattern-in-javascript-3pol 
+    //Escribimos la primera parte para planificar por si hay algún error o el dato que se dió no era el esperado
+    if(localStorage.getItem(key) == null) return;
+    //Convertimos de texto a lenguaje js (lo opuesto a lo que se hizo en setLocalStorage)
+    const data = JSON.parse(localStorage.getItem(key));
+    return data;
+};
+
